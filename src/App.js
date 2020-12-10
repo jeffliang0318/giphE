@@ -16,7 +16,7 @@ function App() {
   },[searchTerm])
 
   function fetchGiphs() {
-    fetch(`https://api.giphy.com/v1/gifs/search?&q=${searchTerm}&limit=20&api_key=QWN9QivHqUJMLkQYQgfUjhF6bHEicQCS`)
+    fetch(`https://api.giphy.com/v1/gifs/search?&q=${searchTerm}&limit=50&api_key=QWN9QivHqUJMLkQYQgfUjhF6bHEicQCS`)
     .then((response) => { return response.json() })
     .then((resp => {
         const dataArray = resp.data
@@ -37,39 +37,40 @@ function App() {
     setModalSrc(gifSrc)
   }
 
-  const giphyListView = giphyList.map((g) => 
-  {
-      const gifSrc = g.images.original.url
-      return  (
-        <img 
-          className="giphy-gif-img" 
-          src={gifSrc} 
-          width="248" 
-          height="248" 
-          alt="loading symbol GIF"
-          style={{margin: "1em"}}
-          onClick={() => openModal(gifSrc)}
-          >
-          </img>
-      )
-  })
+  const giphyListView = () => {
+    return (
+      <div className="d-flex flex-wrap justify-content-center">
+        {giphyList.map((g) => 
+          {
+            const gifSrc = g.images.original.url
+            return  (
+              <img 
+                className="m-2" 
+                src={gifSrc} 
+                width="248" 
+                height="248" 
+                alt="loading symbol GIF"
+                onClick={() => openModal(gifSrc)}
+                >
+              </img>
+            )
+          })
+        }  
+      </div>
+    )
+  }
 
   const modal = () => {
     if (!showModal){ return }
     return(
       <div 
-        style={{
-          height: "100vh",
-          width: "100vw",
-          backgroundColor: "rgba(0, 0, 0, 0.8)"
-        }}
-        className="position-absolute"
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
+        className="position-fixed vw-100 vh-100"
         onClick={() => setShowModal(false)}
       >
         <img
           src={modalSrc}
-          height="100%"
-          className="m-auto d-block"
+          className="m-auto d-block h-100"
         >
         </img>  
       </div>
@@ -95,10 +96,7 @@ function App() {
     <div>
       { modal() }
       { searchBar() }
-
-      <div className="d-flex flex-wrap justify-content-center">
-        {giphyListView}
-      </div>
+      { giphyListView() }
     </div>
   )
 }
