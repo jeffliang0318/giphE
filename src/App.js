@@ -16,7 +16,7 @@ function App() {
   },[searchTerm])
 
   function fetchGiphs() {
-    fetch(`https://api.giphy.com/v1/gifs/search?&q=${searchTerm}&limit=50&api_key=QWN9QivHqUJMLkQYQgfUjhF6bHEicQCS`)
+    fetch(`https://api.giphy.com/v1/gifs/search?&q=${searchTerm}&limit=50&api_key=${process.env.REACT_APP_GIPHY_API_KEY}`)
     .then((response) => { return response.json() })
     .then((resp => {
         const dataArray = resp.data
