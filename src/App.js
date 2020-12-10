@@ -1,32 +1,34 @@
-import './App.css';
+import './App.css'
 import { useState, useEffect } from 'react'
 
 function App() {
-  let [giphyList, setGList] = useState([]);
+  let [searchTerm, setSearchTerm] = useState("infinitely scrolling")
+  let [giphyList, setGList] = useState([])
   let [showModal, setShowModal] = useState(false)
   let [modalSrc, setModalSrc] = useState("")
+  
+  useEffect(() => {
+    fetchGiphs()
+  },[])
 
-  function fetchGiphs(e) {
-    e.preventDefault();
-    const searchTerm = document.querySelector(".search").value;
+  useEffect(() => {
+    fetchGiphs()
+  },[searchTerm])
+
+  function fetchGiphs() {
     fetch(`https://api.giphy.com/v1/gifs/search?&q=${searchTerm}&limit=20&api_key=QWN9QivHqUJMLkQYQgfUjhF6bHEicQCS`)
-    .then((response) => {return response.json(); })
+    .then((response) => { return response.json() })
     .then((resp => {
-        // Here we get the data array from the response object
-        let dataArray = resp.data
-        console.log(dataArray);
+        const dataArray = resp.data
         setGList(dataArray)
-        // We pass the array to showGiphs function
-        // showGiphs(dataArray);
     }))
-    .catch(err => console.log(err)); // We use catch method for Error handling
+    .catch(err => console.log(err))
   }
 
   function handleOnKeyDown (e) {
-    // Immediately invoke the search if you hit enter
     if (e.keyCode === 13) {
-      e.preventDefault();
-      fetchGiphs(e)
+      e.preventDefault()
+      setSearchTerm(e.target.value)
     }
   }
 
@@ -52,11 +54,10 @@ function App() {
       )
   })
 
-  const loading_giphy = ''
-
-  return (
-    <div>
-      {showModal && <div 
+  const modal = () => {
+    if (!showModal){ return }
+    return(
+      <div 
         style={{
           height: "100vh",
           width: "100vw",
@@ -64,38 +65,42 @@ function App() {
         }}
         className="position-absolute"
         onClick={() => setShowModal(false)}
-        >
-        
+      >
         <img
           src={modalSrc}
           height="100%"
-          style={{margin: "auto", display: "block"}}
+          className="m-auto d-block"
         >
         </img>  
-      </div>}
-      <div className="App">
-        <div>
-          <input 
-            type="search"
-            className="search"
-            placeholder="Search all the GIFs"
-            onKeyDown={(e) => handleOnKeyDown(e)}
-            style={{height: "50px", fontSize: "2em"}}          >
-          </input>
-        </div>
-        { giphyList.length === 0 && <img 
-          src="https://media.giphy.com/media/WiIuC6fAOoXD2/giphy.gif" 
-          width="480" 
-          height="480" 
-        >
-        </img> 
-        }
       </div>
-      <div class="d-flex flex-wrap justify-content-center">
+    ) 
+  }
+
+  const searchBar = () => {
+    return (
+      <div className='text-center'>
+        <input 
+          type="search"
+          className="search"
+          placeholder="Search all the GIFs"
+          onKeyDown={(e) => handleOnKeyDown(e)}
+          style={{height: "50px", fontSize: "2em"}}
+        >
+        </input>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      { modal() }
+      { searchBar() }
+
+      <div className="d-flex flex-wrap justify-content-center">
         {giphyListView}
       </div>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
