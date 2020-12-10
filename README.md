@@ -1,6 +1,10 @@
 # GiphE
 ## To run the giphy browser
-    Simply type npm start in the terminal
+
+Create a '.env' file and paste your Giphy API key.\
+If you don't have it, you can get the key here. https://developers.giphy.com/docs/api#quick-start-guide \
+And type npm start in the terminal
+
 ### `npm start`
 
 Runs the app in the development mode.\
