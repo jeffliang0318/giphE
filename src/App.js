@@ -1,4 +1,5 @@
 import './App.css'
+import InfiniteScroll from 'react-infinite-scroller';
 import { useState, useEffect } from 'react'
 
 function App() {
@@ -6,6 +7,7 @@ function App() {
   let [giphyList, setGList] = useState([])
   let [showModal, setShowModal] = useState(false)
   let [modalSrc, setModalSrc] = useState("")
+  let [offset, setOffset] = useState(0)
   
   useEffect(() => {
     fetchGiphs()
@@ -13,14 +15,18 @@ function App() {
 
   useEffect(() => {
     fetchGiphs()
-  },[searchTerm])
+  },[searchTerm, offset])
 
   function fetchGiphs() {
-    fetch(`https://api.giphy.com/v1/gifs/search?&q=${searchTerm}&limit=50&api_key=${process.env.REACT_APP_GIPHY_API_KEY}`)
+    fetch(`https://api.giphy.com/v1/gifs/search?&q=${searchTerm}&limit=50&api_key=${process.env.REACT_APP_GIPHY_API_KEY}&offset=${offset}`)
     .then((response) => { return response.json() })
     .then((resp => {
         const dataArray = resp.data
-        setGList(dataArray)
+        if (offset > 0) {
+          setGList([...giphyList, ...dataArray])
+        } else {
+          setGList(dataArray)
+        }
     }))
     .catch(err => console.log(err))
   }
@@ -28,6 +34,7 @@ function App() {
   function handleOnKeyDown (e) {
     if (e.keyCode === 13) {
       e.preventDefault()
+      setOffset(0)
       setSearchTerm(e.target.value)
     }
   }
@@ -39,23 +46,30 @@ function App() {
 
   const giphyListView = () => {
     return (
-      <div className="d-flex flex-wrap justify-content-center">
-        {giphyList.map((g) => 
-          {
-            const gifSrc = g.images.original.url
-            return  (
-              <img 
-                className="m-2" 
-                src={gifSrc} 
-                width="248" 
-                height="248" 
-                alt="loading symbol GIF"
-                onClick={() => openModal(gifSrc)}
-                >
-              </img>
-            )
-          })
-        }  
+      <div className="d-flex flex-wrap justify-content-center infinite-scroll">
+        <InfiniteScroll
+          loadMore={() => setOffset(giphyList.length + 10)}
+          hasMore={true}
+          initialLoad={false}
+        >
+          {giphyList.map((g) => 
+            {
+              const gifSrc = g.images.original.url
+              return  (
+                <img
+                  key={g.id} 
+                  className="m-2" 
+                  src={gifSrc} 
+                  width="248" 
+                  height="248" 
+                  alt="loading symbol GIF"
+                  onClick={() => openModal(gifSrc)}
+                  >
+                </img>
+              )
+            })
+          }  
+        </InfiniteScroll>
       </div>
     )
   }
@@ -79,7 +93,7 @@ function App() {
 
   const searchBar = () => {
     return (
-      <div className='text-center'>
+      <div className='text-center position-sticky' style={{top: 0, backgroundColor: 'white'}}>
         <input 
           type="search"
           className="search"
