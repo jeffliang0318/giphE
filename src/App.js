@@ -46,12 +46,12 @@ function App() {
 
   const giphyListView = () => {
     return (
-      <div className="d-flex flex-wrap justify-content-center infinite-scroll">
-        <InfiniteScroll
-          loadMore={() => setOffset(giphyList.length + 10)}
-          hasMore={true}
-          initialLoad={false}
-        >
+      <InfiniteScroll
+        loadMore={() => setOffset(giphyList.length + 10)}
+        hasMore={true}
+        initialLoad={false}
+      >
+        <div className='d-flex flex-wrap justify-content-around'>
           {giphyList.map((g) => 
             {
               const gifSrc = g.images.original.url
@@ -69,8 +69,9 @@ function App() {
               )
             })
           }  
-        </InfiniteScroll>
-      </div>
+
+        </div>
+      </InfiniteScroll>
     )
   }
 
